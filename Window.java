@@ -147,6 +147,7 @@ public class Window extends JFrame{
             modifiedRange.setEnabled(false);
             regex.setEnabled(false);
             numLines.setEnabled(false);
+            select.setEnabled(false);
         });
 
         stop.addActionListener(e->{
@@ -160,7 +161,8 @@ public class Window extends JFrame{
                 updateTime.setEnabled(true);
                 modifiedRange.setEnabled(true);
                 regex.setEnabled(true);
-                numLines.setEditable(true);
+                numLines.setEnabled(true);
+                select.setEnabled(true);
 
                 model.clear();
                 tailedFiles.clear();
