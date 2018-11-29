@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -49,6 +50,7 @@ public class Window extends JFrame{
     private boolean runningThread;
     private File[] changingFiles;
     private ArrayList<File> tailedFiles;
+    private JButton select;
 
 
     
@@ -177,7 +179,16 @@ public class Window extends JFrame{
                     }
                 }
             }
-        });;
+        });
+
+        select.addActionListener(e->{
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("."));
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
+                 path.setText(chooser.getSelectedFile().getAbsolutePath());
+            }
+        });
     }
 
     private JMenuBar createMenu(){
@@ -198,12 +209,15 @@ public class Window extends JFrame{
         JPanel control = new JPanel();
         
 
-        JLabel rootPathLabel = new JLabel("Root path: ");
+        JLabel rootPathLabel = new JLabel("Root path:        ");
         path = new JTextField();
-        path.setPreferredSize(new Dimension(200,20));
+        path.setPreferredSize(new Dimension(175,20));
         control.add(rootPathLabel);
         control.add(path);
 
+        select = new JButton(".");
+        select.setPreferredSize(new Dimension(25,20));
+        control.add(select);
 
 
 
