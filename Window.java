@@ -264,11 +264,11 @@ public class Window extends JFrame{
         control.setMinimumSize(new Dimension(250,200));
         return control;
     }
-    private JPanel filesList(){
-        JPanel pane = new JPanel(new BorderLayout());
+    private JScrollPane filesList(){
         model = new DefaultListModel<>();
         list = new JList<>(model);
-        pane.add(list);
+        JScrollPane pane = new JScrollPane();
+        pane.setViewportView(list);
         pane.setPreferredSize(new Dimension(350,200));
         pane.setMaximumSize(new Dimension(350,200));
         pane.setMinimumSize(new Dimension(350,200));
