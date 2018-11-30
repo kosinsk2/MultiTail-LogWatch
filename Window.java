@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -7,11 +8,13 @@ import java.awt.ScrollPane;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,6 +27,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Document;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.Position;
+import javax.swing.text.Highlighter.HighlightPainter;
+import javax.swing.text.Position.Bias;
 
 public class Window extends JFrame{
 
@@ -32,7 +42,7 @@ public class Window extends JFrame{
     private JMenu menu;
     private JMenuItem item1;
     private JList list;
-    private JTextArea logDisplay;
+    private JEditorPane logDisplay;
     private JTextField path;
     private String pathDir;
     private JTextField regex;
@@ -51,6 +61,8 @@ public class Window extends JFrame{
     private File[] changingFiles;
     private ArrayList<File> tailedFiles;
     private JButton select;
+    private boolean colorText;
+    private JButton highlightBtn;
 
 
     
@@ -80,6 +92,8 @@ public class Window extends JFrame{
         actionsSet();
         jFrame.pack();
         jFrame.setVisible(true);
+
+        colorText = false;
     }
 
     private void actionsSet(){
@@ -115,8 +129,13 @@ public class Window extends JFrame{
                     while(runningThread){
                         changingFiles = pf.detectChanges();
                         for(File f : changingFiles){
-                            if(model.indexOf(f.getAbsolutePath().substring(pathDir.length())) == -1)
+                            int index = -1;
+                            if (model.size() > 0)
+                                index = list.getNextMatch(f.getAbsolutePath().substring(pathDir.length()), 0, Position.Bias.Forward);
+                            if(index == -1){
                                 model.addElement(f.getAbsolutePath().substring(pathDir.length()));
+                            }
+                                
                         }
 
                         Tailer t = new Tailer(tailedFiles.toArray(new File[tailedFiles.size()]), numLinesNum);
@@ -128,14 +147,24 @@ public class Window extends JFrame{
                             printText += '\n';
                         }
                         logDisplay.setText(printText);
-                        Thread.sleep(updateTimeNum*1000);
 
+                        if(colorText){
+                            highlight(logDisplay, "error", 244, 152, 65);
+                            highlight(logDisplay, "success", 196, 244, 65);
+                            highlight(logDisplay, "warning", 244, 223, 66);
+                        }else{
+                            removeHighlights(logDisplay);
+                        }
                         //Update file list
                         new Thread(() ->{
                             pf.updateList();
-                        }).start();;
+                        }).start();
+                        Thread.sleep(updateTimeNum*1000);
+
                     }
-                }catch(Exception ex){}
+                }catch(Exception ex){
+                    // ex.printStackTrace();
+                }
             });
 
             thread.start();
@@ -166,6 +195,17 @@ public class Window extends JFrame{
 
                 model.clear();
                 tailedFiles.clear();
+            }
+
+        });
+
+        
+        highlightBtn.addActionListener(e ->{
+            colorText = !colorText;
+            if(colorText){
+                highlightBtn.setText("Highlight off");
+            }else{
+                highlightBtn.setText("Highlight on");
             }
         });
 
@@ -258,6 +298,10 @@ public class Window extends JFrame{
         control.add(start);
         control.add(stop);
 
+        highlightBtn = new JButton("Highlight on");
+        highlightBtn.setPreferredSize(new Dimension(125,20));
+        control.add(highlightBtn);
+
 
         control.setPreferredSize(new Dimension(250,200));
         control.setMaximumSize(new Dimension(250,200));
@@ -277,8 +321,8 @@ public class Window extends JFrame{
     private JPanel watchDisplay(){
         JPanel pane = new JPanel(new BorderLayout());
 
-        logDisplay = new JTextArea();
-        logDisplay.setLineWrap(true);
+        logDisplay = new JEditorPane();
+        // logDisplay.setLineWrap(true);
         logDisplay.setText("Created by Karol Kosinski \nLogWatch manual: " + 
         "\n1. Set up the parent directory where the files are located. " + 
         "\n2. Use regular expressions to filter out files you interesting. To use more than one expression, use \";\" to separate them." +
@@ -300,5 +344,44 @@ public class Window extends JFrame{
         return pane;
     }
 
+    public static void highlight(JTextComponent textComp, String pattern, int r, int g, int b) {
+
+        try{
+            Highlighter hilite = textComp.getHighlighter();
+            Document doc = textComp.getDocument();
+            String text = doc.getText(0, doc.getLength());
+            int pos = 0;
+
+            while ((pos = text.toLowerCase().indexOf(pattern.toLowerCase(), pos)) >= 0) {
+                hilite.addHighlight(pos, pos + pattern.length(), new HP(r, g, b));
+                pos += pattern.length()-1;
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    public static void removeHighlights(JTextComponent textComp) {
+        Highlighter hilite = textComp.getHighlighter();
+        Highlighter.Highlight[] hilites = hilite.getHighlights();
+    
+        for (int i = 0; i < hilites.length; i++) {
+          if (hilites[i].getPainter() instanceof HP) {
+            hilite.removeHighlight(hilites[i]);
+          }
+        }
+      }
 
 }
+    
+class HP extends DefaultHighlighter.DefaultHighlightPainter {
+
+    public HP(int r, int g, int b) {
+        super(new Color(r,g,b));
+    }
+}
+
+
+
+
