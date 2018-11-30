@@ -213,10 +213,10 @@ public class Window extends JFrame{
         wrapBtn.addActionListener(e->{
             if(logDisplay.getLineWrap()){
                 logDisplay.setLineWrap(false);
-                wrapBtn.setText("Unwrap lines");
+                wrapBtn.setText("Wrap lines");
             }else{
                 logDisplay.setLineWrap(true);
-                wrapBtn.setText("Wrap lines");
+                wrapBtn.setText("Unwrap lines");
             }
         });
 
@@ -313,7 +313,7 @@ public class Window extends JFrame{
         highlightBtn.setPreferredSize(new Dimension(125,20));
         control.add(highlightBtn);
 
-        wrapBtn = new JButton("Wrap lines");
+        wrapBtn = new JButton("Unwrap lines");
         wrapBtn.setPreferredSize(new Dimension(125,20));
         control.add(wrapBtn);
 
@@ -336,6 +336,7 @@ public class Window extends JFrame{
         JPanel pane = new JPanel(new BorderLayout());
 
         logDisplay = new JTextArea();
+        logDisplay.setLineWrap(true);
         logDisplay.setText("Created by Karol Kosinski \nLogWatch manual: " + 
         "\n1. Set up the parent directory where the files are located. " + 
         "\n2. Use regular expressions to filter out files you interesting. To use more than one expression, use \";\" to separate them." +
