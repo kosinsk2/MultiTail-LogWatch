@@ -166,7 +166,7 @@ public class Window extends JFrame{
                     }
                 }catch(InterruptedException ex){}
                 catch(Exception ex){
-                    ex.printStackTrace();
+                    // ex.printStackTrace();
                 }
             });
 
