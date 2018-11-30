@@ -42,7 +42,7 @@ public class Window extends JFrame{
     private JMenu menu;
     private JMenuItem item1;
     private JList list;
-    private JEditorPane logDisplay;
+    private JTextArea logDisplay;
     private JTextField path;
     private String pathDir;
     private JTextField regex;
@@ -63,6 +63,7 @@ public class Window extends JFrame{
     private JButton select;
     private boolean colorText;
     private JButton highlightBtn;
+    private JButton wrapBtn;
 
 
     
@@ -209,6 +210,16 @@ public class Window extends JFrame{
             }
         });
 
+        wrapBtn.addActionListener(e->{
+            if(logDisplay.getLineWrap()){
+                logDisplay.setLineWrap(false);
+                wrapBtn.setText("Unwrap lines");
+            }else{
+                logDisplay.setLineWrap(true);
+                wrapBtn.setText("Wrap lines");
+            }
+        });
+
         tailedFiles = new ArrayList<>();
 
         list.addMouseListener( new MouseAdapter() {
@@ -302,6 +313,9 @@ public class Window extends JFrame{
         highlightBtn.setPreferredSize(new Dimension(125,20));
         control.add(highlightBtn);
 
+        wrapBtn = new JButton("Wrap lines");
+        wrapBtn.setPreferredSize(new Dimension(125,20));
+        control.add(wrapBtn);
 
         control.setPreferredSize(new Dimension(250,200));
         control.setMaximumSize(new Dimension(250,200));
@@ -321,8 +335,7 @@ public class Window extends JFrame{
     private JPanel watchDisplay(){
         JPanel pane = new JPanel(new BorderLayout());
 
-        logDisplay = new JEditorPane();
-        // logDisplay.setLineWrap(true);
+        logDisplay = new JTextArea();
         logDisplay.setText("Created by Karol Kosinski \nLogWatch manual: " + 
         "\n1. Set up the parent directory where the files are located. " + 
         "\n2. Use regular expressions to filter out files you interesting. To use more than one expression, use \";\" to separate them." +
