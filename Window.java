@@ -229,12 +229,21 @@ public class Window extends JFrame{
 
         list.addMouseListener( new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
-                if (evt.getClickCount() == 2) {
-                    if(tailedFiles.indexOf(changingFiles[list.getSelectedIndex()]) >= 0){
-                        tailedFiles.remove(changingFiles[list.getSelectedIndex()]);
-                    }else{
-                        tailedFiles.add(changingFiles[list.getSelectedIndex()]);
+                if (evt.getClickCount() == 1) {
+
+                    String clickedValue = (String)list.getSelectedValue();
+                    for(int i = 0; i< changingFiles.length; i++){
+                        if(changingFiles[i].getAbsolutePath().substring(pathDir.length()).equals(clickedValue)){
+                            if(tailedFiles.indexOf(changingFiles[i]) >= 0){
+                                tailedFiles.remove(changingFiles[i]);
+                                break;
+                            }else{
+                                tailedFiles.add(changingFiles[i]);
+                                break;
+                            }
+                        }
                     }
+
                 }
             }
         });
@@ -376,7 +385,7 @@ public class Window extends JFrame{
                 pos += pattern.length()-1;
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
 
     }
