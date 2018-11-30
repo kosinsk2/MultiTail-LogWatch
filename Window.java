@@ -135,6 +135,7 @@ public class Window extends JFrame{
                                 index = list.getNextMatch(f.getAbsolutePath().substring(pathDir.length()), 0, Position.Bias.Forward);
                             if(index == -1){
                                 model.addElement(f.getAbsolutePath().substring(pathDir.length()));
+                                Thread.sleep(1);
                             }
                                 
                         }
@@ -163,8 +164,9 @@ public class Window extends JFrame{
                         Thread.sleep(updateTimeNum*1000);
 
                     }
-                }catch(Exception ex){
-                    // ex.printStackTrace();
+                }catch(InterruptedException ex){}
+                catch(Exception ex){
+                    ex.printStackTrace();
                 }
             });
 
@@ -196,6 +198,9 @@ public class Window extends JFrame{
 
                 model.clear();
                 tailedFiles.clear();
+                try{
+                    Thread.sleep(5);
+                }catch(Exception ex){}
             }
 
         });
